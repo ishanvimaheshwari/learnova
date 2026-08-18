@@ -1,0 +1,6 @@
+{
+  "name": "ScholarDesk - Digital School Backpack",
+  "description": "Smart all-in-one digital school desk that replaces heavy physical textbooks with interactive digital books, AI tutor, tests & quizzes, timetable, and homework tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

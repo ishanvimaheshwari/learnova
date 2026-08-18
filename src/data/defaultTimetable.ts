@@ -1,0 +1,327 @@
+import { TimetablePeriod } from "../types";
+
+export const DEFAULT_TIMETABLE: TimetablePeriod[] = [
+  // Monday
+  {
+    id: "tt-mon-1",
+    day: "Monday",
+    periodNumber: 1,
+    startTime: "08:30",
+    endTime: "09:20",
+    subject: "Physics",
+    title: "AP Physics: Kinematics & Vectors",
+    room: "Lab 304",
+    teacher: "Dr. Vance",
+    bookId: "phys-11",
+    color: "blue"
+  },
+  {
+    id: "tt-mon-2",
+    day: "Monday",
+    periodNumber: 2,
+    startTime: "09:25",
+    endTime: "10:15",
+    subject: "Mathematics",
+    title: "Pure Calculus: Limits & Chain Rule",
+    room: "Room 201",
+    teacher: "Prof. Wei",
+    bookId: "math-12",
+    color: "purple"
+  },
+  {
+    id: "tt-mon-3",
+    day: "Monday",
+    periodNumber: 3,
+    startTime: "10:30",
+    endTime: "11:20",
+    subject: "Chemistry",
+    title: "Adv. Chemistry: Electron Orbitals",
+    room: "Lab 108",
+    teacher: "Dr. Thorne",
+    bookId: "chem-11",
+    color: "amber"
+  },
+  {
+    id: "tt-mon-4",
+    day: "Monday",
+    periodNumber: 4,
+    startTime: "11:25",
+    endTime: "12:15",
+    subject: "Literature",
+    title: "World Literature: Modernist Poetry",
+    room: "Hall B",
+    teacher: "Prof. Higgins",
+    bookId: "lit-11",
+    color: "violet"
+  },
+  {
+    id: "tt-mon-5",
+    day: "Monday",
+    periodNumber: 5,
+    startTime: "13:00",
+    endTime: "13:50",
+    subject: "Computer Science",
+    title: "Algorithms & Asymptotic Big-O",
+    room: "Tech Lab 4",
+    teacher: "Elena Rostova",
+    bookId: "cs-10",
+    color: "cyan"
+  },
+  {
+    id: "tt-mon-6",
+    day: "Monday",
+    periodNumber: 6,
+    startTime: "13:55",
+    endTime: "14:45",
+    subject: "History",
+    title: "World History: Enlightenment & Trade",
+    room: "Room 105",
+    teacher: "Dr. Pendelton",
+    bookId: "hist-10",
+    color: "rose"
+  },
+
+  // Tuesday
+  {
+    id: "tt-tue-1",
+    day: "Tuesday",
+    periodNumber: 1,
+    startTime: "08:30",
+    endTime: "09:20",
+    subject: "Biology",
+    title: "Cell Biology & Organelle Function",
+    room: "Bio Lab 2",
+    teacher: "Dr. Lin",
+    bookId: "bio-10",
+    color: "emerald"
+  },
+  {
+    id: "tt-tue-2",
+    day: "Tuesday",
+    periodNumber: 2,
+    startTime: "09:25",
+    endTime: "10:15",
+    subject: "Physics",
+    title: "Newtonian Dynamics & Friction Lab",
+    room: "Lab 304",
+    teacher: "Dr. Vance",
+    bookId: "phys-11",
+    color: "blue"
+  },
+  {
+    id: "tt-tue-3",
+    day: "Tuesday",
+    periodNumber: 3,
+    startTime: "10:30",
+    endTime: "11:20",
+    subject: "Mathematics",
+    title: "Calculus: Curve Sketching & Max/Min",
+    room: "Room 201",
+    teacher: "Prof. Wei",
+    bookId: "math-12",
+    color: "purple"
+  },
+  {
+    id: "tt-tue-4",
+    day: "Tuesday",
+    periodNumber: 4,
+    startTime: "11:25",
+    endTime: "12:15",
+    subject: "Computer Science",
+    title: "Data Structures & Linked Lists",
+    room: "Tech Lab 4",
+    teacher: "Elena Rostova",
+    bookId: "cs-10",
+    color: "cyan"
+  },
+  {
+    id: "tt-tue-5",
+    day: "Tuesday",
+    periodNumber: 5,
+    startTime: "13:00",
+    endTime: "13:50",
+    subject: "Chemistry",
+    title: "Chemical Equilibrium & Le Chatelier",
+    room: "Lab 108",
+    teacher: "Dr. Thorne",
+    bookId: "chem-11",
+    color: "amber"
+  },
+
+  // Wednesday
+  {
+    id: "tt-wed-1",
+    day: "Wednesday",
+    periodNumber: 1,
+    startTime: "08:30",
+    endTime: "09:20",
+    subject: "Mathematics",
+    title: "Integration Techniques & Parts",
+    room: "Room 201",
+    teacher: "Prof. Wei",
+    bookId: "math-12",
+    color: "purple"
+  },
+  {
+    id: "tt-wed-2",
+    day: "Wednesday",
+    periodNumber: 2,
+    startTime: "09:25",
+    endTime: "10:15",
+    subject: "Biology",
+    title: "Cellular Respiration & Glycolysis",
+    room: "Bio Lab 2",
+    teacher: "Dr. Lin",
+    bookId: "bio-10",
+    color: "emerald"
+  },
+  {
+    id: "tt-wed-3",
+    day: "Wednesday",
+    periodNumber: 3,
+    startTime: "10:30",
+    endTime: "11:20",
+    subject: "History",
+    title: "Atlantic Revolutions & Constitutions",
+    room: "Room 105",
+    teacher: "Dr. Pendelton",
+    bookId: "hist-10",
+    color: "rose"
+  },
+  {
+    id: "tt-wed-4",
+    day: "Wednesday",
+    periodNumber: 4,
+    startTime: "11:25",
+    endTime: "12:15",
+    subject: "Physics",
+    title: "Work-Energy Theorem & Conservation",
+    room: "Lab 304",
+    teacher: "Dr. Vance",
+    bookId: "phys-11",
+    color: "blue"
+  },
+  {
+    id: "tt-wed-5",
+    day: "Wednesday",
+    periodNumber: 5,
+    startTime: "13:00",
+    endTime: "13:50",
+    subject: "Literature",
+    title: "Narrative Craft & Symbolism Seminar",
+    room: "Hall B",
+    teacher: "Prof. Higgins",
+    bookId: "lit-11",
+    color: "violet"
+  },
+
+  // Thursday
+  {
+    id: "tt-thu-1",
+    day: "Thursday",
+    periodNumber: 1,
+    startTime: "08:30",
+    endTime: "09:20",
+    subject: "Chemistry",
+    title: "Acid-Base Titration Practice",
+    room: "Lab 108",
+    teacher: "Dr. Thorne",
+    bookId: "chem-11",
+    color: "amber"
+  },
+  {
+    id: "tt-thu-2",
+    day: "Thursday",
+    periodNumber: 2,
+    startTime: "09:25",
+    endTime: "10:15",
+    subject: "Computer Science",
+    title: "Hash Tables & Collision Resolution",
+    room: "Tech Lab 4",
+    teacher: "Elena Rostova",
+    bookId: "cs-10",
+    color: "cyan"
+  },
+  {
+    id: "tt-thu-3",
+    day: "Thursday",
+    periodNumber: 3,
+    startTime: "10:30",
+    endTime: "11:20",
+    subject: "Physics",
+    title: "Projectile Trajectory Simulation",
+    room: "Lab 304",
+    teacher: "Dr. Vance",
+    bookId: "phys-11",
+    color: "blue"
+  },
+  {
+    id: "tt-thu-4",
+    day: "Thursday",
+    periodNumber: 4,
+    startTime: "11:25",
+    endTime: "12:15",
+    subject: "Mathematics",
+    title: "Fundamental Theorem of Calculus",
+    room: "Room 201",
+    teacher: "Prof. Wei",
+    bookId: "math-12",
+    color: "purple"
+  },
+
+  // Friday
+  {
+    id: "tt-fri-1",
+    day: "Friday",
+    periodNumber: 1,
+    startTime: "08:30",
+    endTime: "09:20",
+    subject: "Biology",
+    title: "Electron Transport Chain & ATP Synthase",
+    room: "Bio Lab 2",
+    teacher: "Dr. Lin",
+    bookId: "bio-10",
+    color: "emerald"
+  },
+  {
+    id: "tt-fri-2",
+    day: "Friday",
+    periodNumber: 2,
+    startTime: "09:25",
+    endTime: "10:15",
+    subject: "History",
+    title: "Enlightenment Ideologies Debate",
+    room: "Room 105",
+    teacher: "Dr. Pendelton",
+    bookId: "hist-10",
+    color: "rose"
+  },
+  {
+    id: "tt-fri-3",
+    day: "Friday",
+    periodNumber: 3,
+    startTime: "10:30",
+    endTime: "11:20",
+    subject: "Literature",
+    title: "Close Reading Analysis Workshop",
+    room: "Hall B",
+    teacher: "Prof. Higgins",
+    bookId: "lit-11",
+    color: "violet"
+  },
+  {
+    id: "tt-fri-4",
+    day: "Friday",
+    periodNumber: 4,
+    startTime: "11:25",
+    endTime: "12:15",
+    subject: "Computer Science",
+    title: "Algorithm Showcase & Code Review",
+    room: "Tech Lab 4",
+    teacher: "Elena Rostova",
+    bookId: "cs-10",
+    color: "cyan"
+  }
+];
+
+export const defaultTimetablePeriods = DEFAULT_TIMETABLE;

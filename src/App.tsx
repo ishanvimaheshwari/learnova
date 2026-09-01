@@ -346,6 +346,8 @@ export const App: React.FC = () => {
             onAddCustomBook={handleAddCustomBook}
             onDeleteCustomBook={handleDeleteCustomBook}
             searchQuery={searchQuery}
+            user={user}
+            onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
           />
         )}
 

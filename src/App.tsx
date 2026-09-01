@@ -443,9 +443,11 @@ export const App: React.FC = () => {
         {activeTab === "profile" && (
           <ProfileView
             user={user}
-            setUser={setUser}
+            onUpdateUser={setUser}
+            onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
+            onSignOut={handleSignOut}
             books={books}
-            pastTestResults={pastTestResults}
+            pastResults={pastTestResults}
             notes={notes}
             flashcards={flashcards}
             studyStreakDays={7}

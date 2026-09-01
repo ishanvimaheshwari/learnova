@@ -187,8 +187,8 @@ export const TimetablePlanner: React.FC<TimetablePlannerProps> = ({
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800/50 self-start sm:self-center">
-            <CheckCircle2 className="w-4 h-4" /> 0 kg Physical Weight Carried
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800/50 self-start sm:self-center">
+            <CheckCircle2 className="w-4 h-4" /> All Textbooks Synced
           </div>
         </div>
 
@@ -198,18 +198,18 @@ export const TimetablePlanner: React.FC<TimetablePlannerProps> = ({
             <button
               key={b.id}
               onClick={() => onOpenBook(b)}
-              className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700/60 text-left transition flex items-center justify-between group"
+              className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-200 dark:border-slate-700/60 text-left transition flex items-center justify-between group cursor-pointer"
             >
               <div className="flex items-center gap-3 truncate">
                 <div className={`p-2 rounded-xl bg-gradient-to-br ${b.coverColor} text-white shrink-0 shadow-xs`}>
                   <BookOpen className="w-4 h-4" />
                 </div>
                 <div className="truncate">
-                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                     {b.title}
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                    {b.subject} • Saves {b.physicalWeightKg} kg
+                    {b.subject} • {b.chapters.length} Chapters
                   </div>
                 </div>
               </div>

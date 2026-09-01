@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
-import { WeightHealthModal } from "./components/WeightHealthModal";
 import { DigitalBackpackView } from "./components/DigitalBackpackView";
 import { BookReader } from "./components/BookReader";
 import { TimetablePlanner } from "./components/TimetablePlanner";
@@ -9,6 +8,8 @@ import { TestCenter } from "./components/TestCenter";
 import { FlashcardsView } from "./components/FlashcardsView";
 import { AiStudyBuddyView } from "./components/AiStudyBuddyView";
 import { NotebookView } from "./components/NotebookView";
+import { ProfileView } from "./components/ProfileView";
+import { GoogleAuthModal } from "./components/GoogleAuthModal";
 
 import {
   Textbook,
@@ -19,7 +20,7 @@ import {
   StudentNote,
   TestResult,
   ActiveTab,
-  BookChapter,
+  UserProfile,
 } from "./types";
 
 import { defaultBooks } from "./data/defaultBooks";
@@ -47,7 +48,30 @@ export const App: React.FC = () => {
   // Tab & Navigation State
   const [activeTab, setActiveTab] = useState<ActiveTab>("backpack");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isWeightModalOpen, setIsWeightModalOpen] = useState<boolean>(false);
+
+  // Google Authentication State
+  const [isGoogleAuthModalOpen, setIsGoogleAuthModalOpen] = useState<boolean>(false);
+  const [user, setUser] = useState<UserProfile>(() => {
+    try {
+      const saved = localStorage.getItem("scholardesk_user_profile");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.email) return parsed;
+      }
+    } catch {}
+    return {
+      id: "student-1",
+      name: "Ishaanvi Maheshwari",
+      email: "ishanvimaheshwari@gmail.com",
+      photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      gradeLevel: "High School Junior (Grade 11)",
+      institution: "Lincoln High School & AP Academy",
+      provider: "google",
+      dailyGoalMinutes: 45,
+      defaultTutorMode: "socratic",
+      targetExams: ["AP Physics 1", "AP Calculus BC", "SAT Prep"],
+    };
+  });
 
   // Core Data States with localStorage fallback
   const [books, setBooks] = useState<Textbook[]>(() => {
@@ -148,13 +172,36 @@ export const App: React.FC = () => {
         if (Array.isArray(parsed)) return parsed;
       }
     } catch {}
-    return [];
+    return [
+      {
+        id: "res-demo-1",
+        quizId: "quiz-phys-1",
+        quizTitle: "Newtonian Mechanics & Dynamics",
+        score: 5,
+        totalQuestions: 5,
+        completedAt: new Date(Date.now() - 86400000).toISOString(),
+      },
+      {
+        id: "res-demo-2",
+        quizId: "quiz-bio-1",
+        quizTitle: "Cellular Respiration & Krebs Cycle",
+        score: 4,
+        totalQuestions: 5,
+        completedAt: new Date(Date.now() - 172800000).toISOString(),
+      },
+    ];
   });
 
   // Selected book filter for flashcards
   const [flashcardBookFilter, setFlashcardBookFilter] = useState<string | undefined>(undefined);
 
   // Persistence effects
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("scholardesk_user_profile", JSON.stringify(user));
+    }
+  }, [user]);
+
   useEffect(() => {
     if (Array.isArray(books)) {
       localStorage.setItem("scholardesk_books", JSON.stringify(books));
@@ -197,11 +244,6 @@ export const App: React.FC = () => {
     }
   }, [pastTestResults]);
 
-  // Derived calculations
-  const totalWeightSaved = (books || [])
-    .reduce((acc, b) => acc + (b.physicalWeightKg || 2.5), 0)
-    .toFixed(1);
-
   // Navigation handlers
   const handleSelectBook = (book: Textbook, chapterId?: string) => {
     setActiveBook(book);
@@ -210,12 +252,7 @@ export const App: React.FC = () => {
   };
 
   const handleOpenQuizForBook = (book: Textbook) => {
-    const existing = quizzes.find((q) => q.bookId === book.id || q.subject === book.subject);
-    if (existing) {
-      setActiveTab("tests");
-    } else {
-      setActiveTab("tests");
-    }
+    setActiveTab("tests");
   };
 
   const handleOpenFlashcardsForBook = (book: Textbook) => {
@@ -252,6 +289,31 @@ export const App: React.FC = () => {
     setNotes((prev) => [newNote, ...prev]);
   };
 
+  const handleGoogleSignIn = (userData: { name: string; email: string; photoUrl: string }) => {
+    setUser({
+      ...user,
+      name: userData.name,
+      email: userData.email,
+      photoUrl: userData.photoUrl,
+      provider: "google",
+    });
+  };
+
+  const handleSignOut = () => {
+    setUser({
+      id: "guest-user",
+      name: "Guest Student",
+      email: "guest@scholardesk.app",
+      photoUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=guest",
+      gradeLevel: "High School Scholar",
+      institution: "Independent Learner",
+      provider: "email",
+      dailyGoalMinutes: 30,
+      defaultTutorMode: "socratic",
+      targetExams: ["General Study"],
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200 flex flex-col">
       {/* Top Main Navigation Bar */}
@@ -264,13 +326,13 @@ export const App: React.FC = () => {
           }
         }}
         books={books}
-        totalWeightSavedKg={parseFloat(totalWeightSaved)}
-        onOpenWeightModal={() => setIsWeightModalOpen(true)}
         isDark={isDark}
         onToggleTheme={() => setIsDark(!isDark)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         studyStreakDays={7}
+        user={user}
+        onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
       />
 
       {/* Main App Content Viewport */}
@@ -351,15 +413,29 @@ export const App: React.FC = () => {
             onOpenBook={(book) => handleSelectBook(book)}
           />
         )}
+
+        {activeTab === "profile" && (
+          <ProfileView
+            user={user}
+            onUpdateUser={setUser}
+            onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
+            onSignOut={handleSignOut}
+            books={books}
+            pastResults={pastTestResults}
+            notes={notes}
+            flashcards={flashcards}
+            studyStreakDays={7}
+          />
+        )}
       </main>
 
-      {/* Backpack Ergonomics & Spine Health Impact Modal */}
-      <WeightHealthModal
-        isOpen={isWeightModalOpen}
-        onClose={() => setIsWeightModalOpen(false)}
-        books={books}
-        totalWeightSavedKg={parseFloat(totalWeightSaved)}
-        bookCount={books.length}
+      {/* Google Authentication Modal */}
+      <GoogleAuthModal
+        isOpen={isGoogleAuthModalOpen}
+        onClose={() => setIsGoogleAuthModalOpen(false)}
+        currentUser={user}
+        onSignInWithGoogle={handleGoogleSignIn}
+        onSignOut={handleSignOut}
       />
     </div>
   );

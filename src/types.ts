@@ -142,6 +142,20 @@ export interface Flashcard {
   lastReviewed?: string;
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  photoUrl: string;
+  provider: "google" | "local";
+  gradeLevel: string;
+  targetExams: string[];
+  defaultTutorMode: "socratic" | "eli12" | "solver" | "summary";
+  dailyGoalMinutes: number;
+  joinedDate: string;
+  institution?: string;
+}
+
 export interface StudentNote {
   id: string;
   title: string;
@@ -160,4 +174,5 @@ export type ActiveTab =
   | "tests"
   | "flashcards"
   | "notes"
-  | "ai_buddy";
+  | "ai_buddy"
+  | "profile";

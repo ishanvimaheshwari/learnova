@@ -13,7 +13,6 @@ import {
   Sparkles,
   Layers,
   ChevronRight,
-  Scale,
   Award,
   CheckCircle2,
   Trash2
@@ -145,29 +144,26 @@ export const DigitalBackpackView: React.FC<DigitalBackpackViewProps> = ({
   return (
     <div className="space-y-8 pb-16">
       {/* Hero Backpack Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-blue-800/40">
-        <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-1/4 -top-10 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-slate-900 text-white p-6 sm:p-8 shadow-xl border border-slate-800">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30">
-              <Scale className="w-3.5 h-3.5" />
-              <span>Zero-Weight Digital Backpack</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-400/30">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Digital School Backpack & Curriculum Hub</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
-              All Your Heavy School Textbooks, Now Effortless & Interactive
+              All Your School Textbooks, Interactive & Always in Sync
             </h1>
             <p className="text-sm sm:text-base text-slate-300">
-              No more carrying 15+ kg bags to school. Access full interactive chapters, AI explanations, built-in
-              audio read-aloud, instant formula lookup, and practice tests in one lightweight tap.
+              Access full interactive chapters, AI explanations, built-in audio read-aloud, instant formula lookup,
+              and chapter practice tests in one seamless digital hub.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-md transition transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-md transition transform hover:-translate-y-0.5 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Add Custom Book / Notes
@@ -176,7 +172,7 @@ export const DigitalBackpackView: React.FC<DigitalBackpackViewProps> = ({
         </div>
 
         {/* Quick Highlights Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/10 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-800 text-xs">
           <div className="flex items-center gap-2 text-slate-300">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Interactive Chapters & Audio</span>
@@ -203,7 +199,7 @@ export const DigitalBackpackView: React.FC<DigitalBackpackViewProps> = ({
             <button
               key={sub}
               onClick={() => setSelectedSubject(sub)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap cursor-pointer ${
                 selectedSubject === sub
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -235,10 +231,8 @@ export const DigitalBackpackView: React.FC<DigitalBackpackViewProps> = ({
                     {book.subject}
                   </span>
 
-                  {/* Physical Weight Saved badge */}
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/90 text-white text-xs font-bold shadow-xs">
-                    <Scale className="w-3 h-3" />
-                    Saves {book.physicalWeightKg} kg
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs font-bold shadow-xs">
+                    {book.chapters.length} Chapters
                   </span>
                 </div>
 
@@ -420,14 +414,13 @@ export const DigitalBackpackView: React.FC<DigitalBackpackViewProps> = ({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Physical Wt (kg)
+                    Edition / Curriculum
                   </label>
                   <input
-                    type="number"
-                    step="0.1"
+                    type="text"
                     value={newWeight}
                     onChange={(e) => setNewWeight(e.target.value)}
-                    placeholder="2.4"
+                    placeholder="e.g. 2026 AP Edition"
                     className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>

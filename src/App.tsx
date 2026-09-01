@@ -10,6 +10,7 @@ import { AiStudyBuddyView } from "./components/AiStudyBuddyView";
 import { NotebookView } from "./components/NotebookView";
 import { ProfileView } from "./components/ProfileView";
 import { GoogleAuthModal } from "./components/GoogleAuthModal";
+import { subscribeToAuthState, logOutGoogle } from "./services/authService";
 
 import {
   Textbook,
@@ -72,6 +73,26 @@ export const App: React.FC = () => {
       targetExams: ["AP Physics 1", "AP Calculus BC", "SAT Prep"],
     };
   });
+
+  // Subscribe to real Firebase Google Auth state changes
+  useEffect(() => {
+    const unsubscribe = subscribeToAuthState(
+      (googleUser) => {
+        setUser((prev) => ({
+          ...prev,
+          id: googleUser.id,
+          name: googleUser.name,
+          email: googleUser.email,
+          photoUrl: googleUser.photoUrl,
+          provider: "google",
+        }));
+      },
+      () => {
+        // Optional: keep current local profile if not logged into Firebase session
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   // Core Data States with localStorage fallback
   const [books, setBooks] = useState<Textbook[]>(() => {
@@ -142,24 +163,28 @@ export const App: React.FC = () => {
     } catch {}
     return [
       {
-        id: "note-1",
-        title: "AP Physics: Wave-Particle Duality Key Notes",
-        subject: "Physics",
+        id: "note-init-1",
+        bookId: "book-chem-1",
+        bookTitle: "AP Chemistry: Structure & Properties",
+        chapterId: "ch-chem-2",
+        chapterTitle: "Chemical Bonding & Molecular Structure",
         content:
-          "### Fundamental Concept\nLight exhibits both wave and particle characteristics.\n\n- **Photoelectric Effect:** Photons have discrete energy E = hf\n- **De Broglie Wavelength:** λ = h / p\n- **Davisson-Germer Experiment:** Proved electron diffraction confirms wave nature of matter.\n\n### Formula Check\n$$E = hc / \\lambda$$\n$$\\lambda = \\frac{h}{m v}$$",
-        tags: ["Physics", "ModernPhysics", "ExamPrep"],
-        updatedAt: new Date().toISOString(),
-        linkedBookId: "book-phys-1",
+          "Remember VSEPR Theory: Lone pairs repel more strongly than bonding pairs. For water (H2O), tetrahedral electronic geometry yields bent molecular geometry with ~104.5 degree bond angle.",
+        pageNumber: 42,
+        color: "yellow",
+        createdAt: new Date().toISOString(),
       },
       {
-        id: "note-2",
-        title: "Calculus: Chain Rule & Implicit Differentiation Tricks",
-        subject: "Mathematics",
+        id: "note-init-2",
+        bookId: "book-phys-1",
+        bookTitle: "Fundamentals of Physics: Mechanics",
+        chapterId: "ch-phys-1",
+        chapterTitle: "Kinematics in One & Two Dimensions",
         content:
-          "### Chain Rule Rule of Thumb\nAlways differentiate the outer function first, evaluate at the inner function, then multiply by the derivative of the inner function!\n\n$$\\frac{d}{dx}[f(g(x))] = f'(g(x)) \\cdot g'(x)$$\n\n### Common Mistake\nForgetting to chain through when multiple compositions are nested e.g., sin(cos(x²)).",
-        tags: ["Calculus", "Derivatives", "Math"],
-        updatedAt: new Date().toISOString(),
-        linkedBookId: "book-math-1",
+          "Important kinematic equation for projectile maximum height: H = (v0^2 * sin^2(theta)) / (2g). Time of flight is 2 * v0 * sin(theta) / g.",
+        pageNumber: 15,
+        color: "blue",
+        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
       },
     ];
   });
@@ -251,7 +276,7 @@ export const App: React.FC = () => {
     setActiveTab("reader");
   };
 
-  const handleOpenQuizForBook = (book: Textbook) => {
+  const handleOpenQuizForBook = (_book: Textbook) => {
     setActiveTab("tests");
   };
 
@@ -299,7 +324,10 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await logOutGoogle();
+    } catch {}
     setUser({
       id: "guest-user",
       name: "Guest Student",
@@ -319,30 +347,23 @@ export const App: React.FC = () => {
       {/* Top Main Navigation Bar */}
       <Navbar
         activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          if (tab === "flashcards") {
-            setFlashcardBookFilter(undefined);
-          }
-        }}
-        books={books}
+        setActiveTab={setActiveTab}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         isDark={isDark}
         onToggleTheme={() => setIsDark(!isDark)}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        studyStreakDays={7}
         user={user}
         onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
       />
 
-      {/* Main App Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+      {/* Main Content Area based on Active Tab */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === "backpack" && (
           <DigitalBackpackView
             books={books}
             onSelectBook={handleSelectBook}
-            onOpenQuizForBook={handleOpenQuizForBook}
-            onOpenFlashcardsForBook={handleOpenFlashcardsForBook}
+            onOpenQuiz={handleOpenQuizForBook}
+            onOpenFlashcards={handleOpenFlashcardsForBook}
             onAddCustomBook={handleAddCustomBook}
             onDeleteCustomBook={handleDeleteCustomBook}
             searchQuery={searchQuery}
@@ -351,38 +372,34 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === "reader" && activeBook && (
+        {activeTab === "reader" && (
           <BookReader
-            book={activeBook}
+            books={books}
+            initialBook={activeBook}
             initialChapterId={activeChapterId}
             onBackToBackpack={() => setActiveTab("backpack")}
-            onGenerateQuizForChapter={(book, chapter) => {
-              setActiveTab("tests");
-            }}
-            onOpenFlashcards={(book) => {
-              setFlashcardBookFilter(book.id);
-              setActiveTab("flashcards");
-            }}
+            onOpenAiTutor={() => setActiveTab("tutor")}
+            onOpenTestCenter={() => setActiveTab("tests")}
             onSaveNote={handleSaveNoteFromReader}
+            notes={notes}
           />
         )}
 
         {activeTab === "timetable" && (
           <TimetablePlanner
             periods={periods}
+            setPeriods={setPeriods}
             books={books}
-            homework={homework}
-            onOpenBook={(book) => handleSelectBook(book)}
-            onUpdatePeriods={setPeriods}
+            onSelectBook={handleSelectBook}
           />
         )}
 
         {activeTab === "homework" && (
           <HomeworkTracker
             homework={homework}
+            setHomework={setHomework}
             books={books}
-            onUpdateHomework={setHomework}
-            onOpenBookChapter={handleOpenBookChapterFromHomework}
+            onOpenChapter={handleOpenBookChapterFromHomework}
           />
         )}
 
@@ -391,39 +408,44 @@ export const App: React.FC = () => {
             quizzes={quizzes}
             books={books}
             onSaveResult={handleSaveResult}
+            onAddQuiz={handleAddAiQuiz}
             pastResults={pastTestResults}
-            onAddAiQuiz={handleAddAiQuiz}
           />
         )}
 
         {activeTab === "flashcards" && (
           <FlashcardsView
             flashcards={flashcards}
+            setFlashcards={setFlashcards}
             books={books}
-            onUpdateFlashcards={setFlashcards}
-            selectedBookFilter={flashcardBookFilter}
+            initialBookId={flashcardBookFilter}
           />
         )}
 
-        {activeTab === "ai_buddy" && <AiStudyBuddyView books={books} />}
+        {activeTab === "tutor" && (
+          <AiStudyBuddyView
+            books={books}
+            activeBook={activeBook}
+            notes={notes}
+            onSelectBook={(book) => setActiveBook(book)}
+          />
+        )}
 
-        {activeTab === "notes" && (
+        {activeTab === "notebook" && (
           <NotebookView
             notes={notes}
+            setNotes={setNotes}
             books={books}
-            onUpdateNotes={setNotes}
-            onOpenBook={(book) => handleSelectBook(book)}
+            onNavigateToChapter={handleOpenBookChapterFromHomework}
           />
         )}
 
         {activeTab === "profile" && (
           <ProfileView
             user={user}
-            onUpdateUser={setUser}
-            onOpenGoogleAuth={() => setIsGoogleAuthModalOpen(true)}
-            onSignOut={handleSignOut}
+            setUser={setUser}
             books={books}
-            pastResults={pastTestResults}
+            pastTestResults={pastTestResults}
             notes={notes}
             flashcards={flashcards}
             studyStreakDays={7}
@@ -433,7 +455,7 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Google Authentication Modal */}
+      {/* Google Authentication Dialog Modal */}
       <GoogleAuthModal
         isOpen={isGoogleAuthModalOpen}
         onClose={() => setIsGoogleAuthModalOpen(false)}
@@ -444,5 +466,4 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
 export default App;

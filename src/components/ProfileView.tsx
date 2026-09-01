@@ -20,7 +20,9 @@ import {
   ChevronRight,
   BookMarked,
   Sliders,
-  Target
+  Target,
+  Sun,
+  Moon
 } from "lucide-react";
 import { UserProfile, Textbook, TestResult, StudentNote, Flashcard } from "../types";
 
@@ -34,6 +36,8 @@ interface ProfileViewProps {
   notes: StudentNote[];
   flashcards: Flashcard[];
   studyStreakDays: number;
+  isDark?: boolean;
+  onToggleTheme?: () => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
@@ -46,6 +50,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   notes,
   flashcards,
   studyStreakDays,
+  isDark,
+  onToggleTheme,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user.name);
@@ -467,6 +473,51 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 ))}
               </div>
             </div>
+
+            {onToggleTheme && (
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  App Visual Theme
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isDark) onToggleTheme();
+                    }}
+                    className={`p-3 rounded-xl border flex items-center gap-3 transition cursor-pointer ${
+                      !isDark
+                        ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/30 text-blue-950 dark:text-blue-200 font-bold shadow-xs"
+                        : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-300"
+                    }`}
+                  >
+                    <Sun className="w-5 h-5 text-amber-500 shrink-0" />
+                    <div className="text-left">
+                      <div className="text-xs font-bold">Light Academic Mode</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">Crisp high-contrast day reading</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!isDark) onToggleTheme();
+                    }}
+                    className={`p-3 rounded-xl border flex items-center gap-3 transition cursor-pointer ${
+                      isDark
+                        ? "border-blue-600 bg-blue-50/70 dark:bg-blue-950/30 text-blue-950 dark:text-blue-200 font-bold shadow-xs"
+                        : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-300"
+                    }`}
+                  >
+                    <Moon className="w-5 h-5 text-indigo-400 shrink-0" />
+                    <div className="text-left">
+                      <div className="text-xs font-bold">Dark Night Desk Mode</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">Dim-light eye strain reduction</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">

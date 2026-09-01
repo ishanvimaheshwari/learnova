@@ -427,6 +427,8 @@ export const App: React.FC = () => {
             notes={notes}
             flashcards={flashcards}
             studyStreakDays={7}
+            isDark={isDark}
+            onToggleTheme={() => setIsDark(!isDark)}
           />
         )}
       </main>

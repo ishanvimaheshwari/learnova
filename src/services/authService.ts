@@ -39,6 +39,27 @@ export interface GoogleUserProfile {
 }
 
 /**
+ * Safely parse standard JWT returned by Google Identity Services ID token
+ */
+export const parseJwt = (token: string): any => {
+  try {
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error("Failed to parse JWT from Google:", e);
+    return null;
+  }
+};
+
+/**
  * Fetch real user details using an OAuth access token from Google
  */
 export const fetchGoogleUserInfo = async (accessToken: string): Promise<GoogleUserProfile> => {
@@ -111,6 +132,60 @@ export const signInWithGISTokenClient = (): Promise<GoogleUserProfile> => {
       reject(e);
     }
   });
+};
+
+/**
+ * Render official Google Sign In button directly into a container DOM element
+ */
+export const renderGoogleIdentityButton = (
+  containerElement: HTMLElement,
+  onSuccess: (profile: GoogleUserProfile) => void,
+  onError?: (err: any) => void
+) => {
+  if (!window.google?.accounts?.id) {
+    console.warn("Google Identity accounts.id not ready");
+    return;
+  }
+
+  const clientId = firebaseConfig.oAuthClientId;
+  if (!clientId) return;
+
+  try {
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback: (response: { credential: string }) => {
+        if (!response.credential) {
+          if (onError) onError(new Error("No credential received"));
+          return;
+        }
+        const payload = parseJwt(response.credential);
+        if (payload) {
+          const profile: GoogleUserProfile = {
+            id: payload.sub || `google-${Date.now()}`,
+            name: payload.name || payload.given_name || "Google Scholar",
+            email: payload.email || "",
+            photoUrl:
+              payload.picture ||
+              `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.email || "scholar")}`,
+            accessToken: response.credential,
+          };
+          onSuccess(profile);
+        }
+      },
+    });
+
+    window.google.accounts.id.renderButton(containerElement, {
+      type: "standard",
+      theme: "filled_blue",
+      size: "large",
+      text: "signin_with",
+      shape: "rectangular",
+      logo_alignment: "left",
+      width: 320,
+    });
+  } catch (err) {
+    console.warn("Could not render official Google button:", err);
+  }
 };
 
 /**

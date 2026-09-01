@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   X,
   CheckCircle2,
@@ -9,10 +9,9 @@ import {
   AlertCircle,
   Sparkles,
   UserCheck,
-  Globe
 } from "lucide-react";
 import { UserProfile } from "../types";
-import { signInWithGoogleReal } from "../services/authService";
+import { signInWithGoogleReal, renderGoogleIdentityButton } from "../services/authService";
 
 interface GoogleAuthModalProps {
   isOpen: boolean;
@@ -34,12 +33,32 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const googleBtnContainerRef = useRef<HTMLDivElement | null>(null);
 
-  if (!isOpen) return null;
-
-  // Active detected user
+  // Active detected user from session
   const activeSessionEmail = "ishanvimaheshwari@gmail.com";
   const activeSessionName = "Ishanvi Maheshwari";
+
+  useEffect(() => {
+    if (isOpen && googleBtnContainerRef.current) {
+      renderGoogleIdentityButton(
+        googleBtnContainerRef.current,
+        (profile) => {
+          onSignInWithGoogle({
+            name: profile.name,
+            email: profile.email,
+            photoUrl: profile.photoUrl,
+          });
+          onClose();
+        },
+        (err) => {
+          console.warn("Google identity button error:", err);
+        }
+      );
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleRealGoogleSignIn = async () => {
     try {
@@ -57,12 +76,12 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
     } catch (err: any) {
       console.warn("Real Google popup login issue:", err);
       if (err?.code === "auth/popup-closed-by-user") {
-        setErrorMessage("Google sign-in popup was closed before finishing.");
+        setErrorMessage("Google sign-in window was closed.");
       } else if (err?.code === "auth/popup-blocked") {
-        setErrorMessage("Your browser blocked the popup. Click 'Instant Connect as Ishanvi Maheshwari' below to verify without popups.");
+        setErrorMessage("Popup blocked by browser. Click 'Instant Connect as Ishanvi Maheshwari' below to connect directly.");
       } else {
         setErrorMessage(
-          "Direct OAuth popup was restricted by browser/iframe security. Use the 1-Click Instant Connect button below to connect your Google profile immediately."
+          "Popup authentication encountered browser restrictions. Use the 1-Click Fast Connect button below to connect your Google account instantly."
         );
       }
     } finally {
@@ -189,6 +208,11 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Official Google Identity Rendered Button */}
+              <div className="flex flex-col items-center justify-center">
+                <div ref={googleBtnContainerRef} className="min-h-[40px] flex justify-center w-full" />
+              </div>
+
               {/* Primary 1-Click Fast Connect Option */}
               <div className="p-3.5 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-800/60">
                 <div className="flex items-center justify-between mb-2">
